@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\User;
 
 return new class extends Migration
 {
@@ -16,8 +17,8 @@ return new class extends Migration
             $table->string('lastname');
             $table->string('firstname');
             $table->string('password');
-            $table->tinyInteger('role')->default('user');
-            $table->tinyInteger('status')->default('active');
+            $table->tinyInteger('role')->default('1');
+            $table->tinyInteger('status')->default(1)->comment('0 = inactive, 1 = active');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
@@ -48,5 +49,6 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_resets');
     }
 };

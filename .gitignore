@@ -21,4 +21,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+<<<<<<< Updated upstream
 .DS_Store
+=======
+>>>>>>> Stashed changes

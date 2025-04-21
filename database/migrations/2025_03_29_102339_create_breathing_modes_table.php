@@ -27,5 +27,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('breathing_modes');
+        Schema::dropIfExists('breathing_modes');
     }
 };

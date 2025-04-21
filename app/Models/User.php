@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\User; 
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    const STATUS_INACTIVE = 0;
+    const STATUS_ACTIVE = 1; 
+    
     use HasFactory, Notifiable;
 
     /**
@@ -18,7 +20,11 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'lastname',
+        'firstname',
+        'role',
+        'status',
+        'email_verified_at',
         'email',
         'password',
     ];
@@ -34,15 +40,65 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    /**
+     * Scope a query to only include active users.
+     */
+    public function scopeActive($query)
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $query->where('status', 'active');
     }
+
+    /**
+     * Scope a query to only include inactive users.
+     */
+    public function scopeInactive($query)
+    {
+        return $query->where('status', 'inactive');
+    }
+
+    /**
+     * Automatically hash the password when setting it.
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
+
+    public const ROLES = [
+        'anonymous',  // Utilisateur non connecté
+        'user',       // Utilisateur connecté
+        'admin',      // Administrateur
+    ];
+
+    public const STATUSES = [
+        'active',
+        'inactive',
+        'banned',      // Par exemple, utilisateur banni
+        'pending',     // Par exemple, en attente de validation
+    ];
+
+    public function checkUserRole(User $user)
+    {
+    if ($user->role === User::ROLES['admin']) {
+        return response()->json(['message' => 'Cet utilisateur est un administrateur.']);
+    }
+
+    return response()->json(['message' => 'Cet utilisateur n\'est pas un administrateur.']);
+}
+
+public function setUserRole(User $user)
+{
+    $user->role = User::ROLES['user'];
+    $user->save();
+
+    return response()->json(['message' => 'Le rôle de l\'utilisateur a été mis à jour.']);
+}
 }

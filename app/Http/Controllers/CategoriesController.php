@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategoriesRequest;
 use App\Http\Requests\UpdateCategoriesRequest;
-use App\Models\Categories;
+use Illuminate\Http\Request;
+use App\Models\Category;
 
 class CategoriesController extends Controller
 {
@@ -13,7 +14,9 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        //
+        return view('categories.index', [
+            'categories' => Category::all()
+        ]);
     }
 
     /**
